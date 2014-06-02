@@ -29,14 +29,19 @@ module.exports = function(settings) {
     if (options.origin === false) return;
 
     var origin;
+
     if (typeof options.origin === 'string') {
       origin = options.origin;
     } else if (typeof options.origin === 'function') {
-      origin = options.origin(this.request);
+      if (options.origin(this.request.header.origin)) {
+        origin = this.request.header.origin;
+      }
     } else {
       origin = defaults.origin(this.request);
     }
-    this.set('Access-Control-Allow-Origin', origin);
+    if (origin !== undefined) {
+      this.set('Access-Control-Allow-Origin', origin);
+    }
 
     /**
      * Access Control Expose Headers
